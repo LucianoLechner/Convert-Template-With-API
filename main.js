@@ -1,31 +1,56 @@
-const addressApi = 'http://api.exchangeratesapi.io/v1/latest?access_key=d3ca3bfb37a08a1355510bf54114cc7b&symbols=USD'
 
-async function ExchangeRates(){
-    const resp = await fetch(addressApi);
-
-    if (resp.status === 200){
-        const obj = await resp.json();
-
-        console.log(obj);
-    }
-}
-
-ExchangeRates();
-
-
-
-const form = document.querySelector('form')
+const form = document.getElementById('form') 
 const amount = document.getElementById('amount')
-const currency = document.getElementById('currency') // opcoes de moedas
+const currency = document.getElementById('currency') // opcoes de moedas (select)
 const footer = document.querySelector('main footer')
 const description = document.getElementById('description')
 const result = document.getElementById('result')
 
-const USD = 4.87
-const EUR = 5.32 
-const GBP = 6.08
+const url = 'https://economia.awesomeapi.com.br/last/USD-BRL,EUR-BRL,GBP-BRL'
 
-// evento para o input receber somente valores numéricos
+
+async function getApi(){ // FUNÇÃO ASSINCRONA PARA A CHAMADA DA API 
+    const resp = await fetch(url); // GUARDA A RESPOSTA DA API DENTRO DA VAR RESP, APOS AGUARDAR O CARREGAMENTO (AWAIT);
+
+    if (resp.status === 200){ // SE A RESPOSTA FOR OK, TRANSFORMA EM OBJETO JSON.
+        const obj = await resp.json();
+
+        const dolar = obj["USDBRL"]; // seleciona o objeto USDBRL
+        const euro = obj["EURBRL"];
+        const libra = obj["GBPBRL"];
+
+        form.addEventListener('submit', (e) =>{
+            e.preventDefault();
+        
+            switch (currency.value){
+                case "USD":
+                    description.textContent = `US$ 1 = ${Number(dolar.bid).toFixed(2)}`
+                    result.textContent = 'R$ ' + (amount.value * dolar.bid).toFixed(2);
+                    footer.classList.add('show-result')
+                    break;
+
+                case "EUR":
+                    description.textContent = `€ 1 = ${Number(euro.bid).toFixed(2)}`
+                    result.textContent = 'R$ ' + (amount.value * euro.bid).toFixed(2);
+                    footer.classList.add('show-result')
+                    break;
+
+                case "GBP":
+                    description.textContent = `£ 1 = ${Number(libra.bid).toFixed(2)}`
+                    result.textContent = 'R$ ' + (amount.value * libra.bid).toFixed(2);
+                    footer.classList.add('show-result')
+                    break;
+            }
+        } )
+    } else {
+        alert('Ops, estamos com problemas, tente novamente mais tarde.')
+        
+    }
+}
+
+getApi();
+
+// evento para o input receber somente valores numéricoss
 amount.addEventListener('input', () =>{
     
     const hasCharacterRegex = /\D+/g
@@ -33,33 +58,6 @@ amount.addEventListener('input', () =>{
     amount.value = amount.value.replace(hasCharacterRegex, "")
 })
 
-// capturando o evento de submit do furmulario
-form.onsubmit = (event) => {
-    event.preventDefault();
-
-    switch (currency.value){
-        case "USD":
-            convertCurrency(amount.value, USD, "US$")
-            break;
-        case "EUR":
-            convertCurrency(amount.value, EUR, "€")
-            break;
-        case "GBP":
-            convertCurrency(amount.value, GBP, "£")
-            break;
-    }
-}
-
-// funcao para converter a moeda;
-
-function convertCurrency(amount, price, symbol){
-    // const result = parseFloat(amount * price)
-    // return result + symbol
-    
-    description.textContent = `${symbol} 1 = ${price} `
-    result.textContent = `R$ ${(amount * price).toFixed(2)}`
-    footer.classList.add('show-result')
-}
 
 
 
