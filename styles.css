@@ -160,3 +160,35 @@ footer h1 {
   line-height: 3rem;
   word-break: break-all;
 }
+
+@media (width < 729px){
+  
+  body {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    flex-direction: column;
+    padding: 10% 0;
+    gap: 2rem;
+    margin: 0;
+  }
+  
+  main {
+    width: 80%;
+    border-radius: 1.5rem;
+    border: 1px solid #2f3279;
+    overflow-y: hidden;
+    margin: 0 auto;
+  }
+  
+  form {
+    background-color: #141534;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+}
